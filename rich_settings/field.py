@@ -1,19 +1,19 @@
-from abc import ABC
 from itertools import cycle, islice
 from queue import Queue
-from typing import Tuple
+from typing import Tuple, Type, Any
 
-from .base.abstract import AbstractField
+from .base.abstract import AbstractField, AbstractActionMixin
 from functools import partial
 
 
-class FieldBase[FieldType](AbstractField, ABC):
+class FieldBase[FieldType](AbstractField):
     __action_queue = Queue()
     _value_type = FieldType
     current_value = None
     current_alias = None
 
-    def __init__(self, values: Tuple[FieldType] | Tuple[FieldType, FieldType], alias: Tuple[str] | Tuple[str, str]) -> None:
+    def __init__(self, values: Tuple[FieldType] | Tuple[FieldType, FieldType],
+                 alias: Tuple[str] | Tuple[str, str]) -> None:
         if self.__validate_val_and_alias(values, alias):
             self.values = values
             self.alias = alias
@@ -24,7 +24,8 @@ class FieldBase[FieldType](AbstractField, ABC):
             raise ValueError('Values and aliases must be the same length')  # !
         if type(val) is not Tuple[FieldType]:
             raise ValueError(f'Values must be a {FieldType}')
-        return True
+        if len(val) == 0 or len(alias) == 0:
+            return True
 
     def __move_current(self, negative: bool) -> None:
         if not self.current_value:
@@ -44,4 +45,12 @@ class FieldBase[FieldType](AbstractField, ABC):
             self.__action_queue.put(partial(self.action, **kwargs))
 
 
+class FlagField(FieldBase[bool]):
+    def __init__(self):
+        super().__init__(values=(True, False), alias=('Yes', 'No'))
 
+
+class FlagDataclassField(FieldBase, AbstractActionMixin):
+
+    def action(self, dataclass: Any, field_name: str):
+        setattr(dataclass, field_name, self.current_value)
