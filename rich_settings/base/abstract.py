@@ -10,13 +10,19 @@ class AbstractActionMixin(ABC):
         pass
 
 
-class AbstractActionExecutor(ABC):
+class AbstractActionExecutorMixin(ABC):
     @abstractmethod
     def execute_action(self, *args, **kwargs):
         pass
 
 
 class AbstractField(ABC):
+    current_value = None
+    current_alias = None
+
+    @abstractmethod
+    def __str__(self):
+        pass
 
     @abstractmethod
     def validate(self, *args, **kwargs):
@@ -30,5 +36,5 @@ class AbstractVisualizeExecutor(ABC):
         pass
 
     @abstractmethod
-    def _validate(self, *args, **kwargs):
+    def validate(self, *args, **kwargs):
         pass

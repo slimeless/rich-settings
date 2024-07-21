@@ -1,13 +1,11 @@
 from itertools import cycle, islice
 from queue import Queue
-from typing import Tuple, Type, Any
+from typing import Tuple, Any
 
 from .base.abstract import AbstractField, AbstractActionMixin
-from functools import partial
 
 
 class FieldBase[FieldType](AbstractField):
-    __action_queue = Queue()
     _value_type = FieldType
     current_value = None
     current_alias = None
@@ -37,20 +35,22 @@ class FieldBase[FieldType](AbstractField):
                 iter_current = islice(cycle(self.values), self.values.index(self.current_value), None)
             self.current_value = next(iter_current)
 
-    def validate(self, negative: bool = False, put_action: bool = True, **kwargs) -> None:
+    def validate(self, negative: bool = False, put_action: bool = False, **kwargs) -> None:
         self.__move_current(negative)
         index = self.values.index(self.current_value)
         self.current_alias = self.alias[index]
-        if put_action:
-            self.__action_queue.put(partial(self.action, **kwargs))
+
+    def __str__(self):
+        return self.current_alias
 
 
-class FlagField(FieldBase[bool]):
+class BoolField(FieldBase[bool]):
     def __init__(self):
         super().__init__(values=(True, False), alias=('Yes', 'No'))
 
 
-class FlagDataclassField(FieldBase, AbstractActionMixin):
+class FlagDataclassField(BoolField, AbstractActionMixin):
+    __action_queue = Queue()
 
     def action(self, dataclass: Any, field_name: str):
         setattr(dataclass, field_name, self.current_value)
