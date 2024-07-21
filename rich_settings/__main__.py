@@ -15,7 +15,9 @@ def render(renderable_obj: BaseVisualizeExecutor):
             if ch == key.UP or ch == "k":
                 renderable_obj.selected = max(0, renderable_obj.selected - 1)
             if ch == key.DOWN or ch == "j":
-                renderable_obj.selected = min(len(renderable_obj.columns) - 1, renderable_obj.selected + 1)
+                renderable_obj.selected = min(
+                    len(renderable_obj.columns) - 1, renderable_obj.selected + 1
+                )
 
             if ch == key.RIGHT or ch == "l":
                 renderable_obj.validate()
@@ -26,9 +28,9 @@ def render(renderable_obj: BaseVisualizeExecutor):
             live.update(renderable_obj, refresh=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fields = (BoolField(), BoolField())
-    columns = ('is fullscreen', 'is maximized')
+    columns = ("is fullscreen", "is maximized")
 
     renderable = BaseVisualizeExecutor(fields, columns)
 
