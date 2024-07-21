@@ -10,18 +10,17 @@ class FieldBase[FieldType](AbstractField):
     current_value = None
     current_alias = None
 
-    def __init__(self, values: Tuple[FieldType] | Tuple[FieldType, FieldType],
-                 alias: Tuple[str] | Tuple[str, str]) -> None:
+    def __init__(self, values: Tuple[FieldType, FieldType],
+                 alias: Tuple[str, str]) -> None:
         if self.__validate_val_and_alias(values, alias):
             self.values = values
             self.alias = alias
 
-    @staticmethod
-    def __validate_val_and_alias(val: Tuple, alias: Tuple) -> bool:
+    def __validate_val_and_alias(self, val: Tuple, alias: Tuple) -> bool:
         if len(val) != len(alias):
             raise ValueError('Values and aliases must be the same length')  # !
-        if type(val) is not Tuple[FieldType]:
-            raise ValueError(f'Values must be a {FieldType}')
+        if not all([isinstance(x, self._value_type) for x in val]):
+            raise ValueError(f'Values must be a {self._value_type}')
         if len(val) == 0 or len(alias) == 0:
             return True
 
@@ -45,8 +44,17 @@ class FieldBase[FieldType](AbstractField):
 
 
 class BoolField(FieldBase[bool]):
+    _value_type = bool
+
     def __init__(self):
-        super().__init__(values=(True, False), alias=('Yes', 'No'))
+        self.values = (True, False)
+        self.alias = ('Yes', 'No')
+        self.current_value = self.values[0]
+        self.current_alias = self.alias[0]
+        super().__init__(values=self.values, alias=self.alias)
+
+    def __move_current(self, *args, **kwargs) -> None:
+        self.current_value = not self.current_value
 
 
 class FlagDataclassField(BoolField, AbstractActionMixin):

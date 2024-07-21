@@ -10,7 +10,7 @@ from .base.styles import SELECTED
 
 class BaseVisualizeExecutor(AbstractVisualizeExecutor):
 
-    def __init__(self, fields: Tuple[AbstractField], columns: Tuple[str], style: Style = SELECTED):
+    def __init__(self, fields: Tuple[AbstractField, AbstractField], columns: Tuple[str, str], style: Style = SELECTED):
         self.fields = fields
         self.columns = columns
         self.style = style
