@@ -1,11 +1,21 @@
+from dataclasses import dataclass
+
 from rich.console import Console
 
 from .field import BoolField
-from .visualize import BaseVisualizeExecutor
+from .visualize import BoolDataclassVisualizeExecutor, BaseVisualizeExecutor
 from rich.live import Live
 from readchar import readkey, key
 
 console = Console()
+
+
+@dataclass
+class Player:
+    is_fullscreen: bool = True
+    is_maximized: bool = False
+    is_animated: bool = False
+    exc: str = ""
 
 
 def render(renderable_obj: BaseVisualizeExecutor):
@@ -25,13 +35,18 @@ def render(renderable_obj: BaseVisualizeExecutor):
             if ch == key.LEFT or ch == "h":
                 renderable_obj.validate(negative=True)
 
+            if ch == key.ENTER:
+                if hasattr(renderable_obj, 'execute_action_queue'):
+                    renderable_obj.execute_action_queue()
+                return
+
             live.update(renderable_obj, refresh=True)
 
 
 if __name__ == "__main__":
-    fields = (BoolField(), BoolField())
-    columns = ("is fullscreen", "is maximized")
+    a = Player()
 
-    renderable = BaseVisualizeExecutor(fields, columns)
+    renderable = BoolDataclassVisualizeExecutor(a)
 
     render(renderable)
+    print(a)

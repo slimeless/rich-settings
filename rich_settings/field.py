@@ -1,8 +1,8 @@
+from functools import partial
 from itertools import cycle, islice
-from queue import Queue
 from typing import Tuple, Any
 
-from .base.abstract import AbstractField, AbstractActionMixin
+from .base.abstract import AbstractField
 
 
 class FieldBase[FieldType](AbstractField):
@@ -11,7 +11,7 @@ class FieldBase[FieldType](AbstractField):
     current_alias = None
 
     def __init__(
-        self, values: Tuple[FieldType, FieldType], alias: Tuple[str, str]
+            self, values: Tuple[FieldType, FieldType], alias: Tuple[str, str]
     ) -> None:
         if self.__validate_val_and_alias(values, alias):
             self.values = values
@@ -42,7 +42,7 @@ class FieldBase[FieldType](AbstractField):
             self.current_value = next(iter_current)
 
     def validate(
-        self, negative: bool = False, put_action: bool = False, **kwargs
+            self, negative: bool = False, *args, **kwargs
     ) -> None:
         self.__move_current(negative)
         index = self.values.index(self.current_value)
@@ -55,19 +55,35 @@ class FieldBase[FieldType](AbstractField):
 class BoolField(FieldBase[bool]):
     _value_type = bool
 
-    def __init__(self):
-        self.values = (True, False)
-        self.alias = ("Yes", "No")
-        self.current_value = self.values[0]
-        self.current_alias = self.alias[0]
-        super().__init__(values=self.values, alias=self.alias)
+    def __init__(self, current_value: bool = None):
+        values = (True, False)
+        aliases = ("Yes", "No")
+        super().__init__(values=values, alias=aliases)
+
+        self.values = values
+        self.alias = aliases
+        self.current_value = current_value if current_value is not None else values[0]
+        self.current_alias = self.alias[self.values.index(self.current_value)]
 
     def __move_current(self, *args, **kwargs) -> None:
         self.current_value = not self.current_value
 
 
-class FlagDataclassField(BoolField, AbstractActionMixin):
-    __action_queue = Queue()
+class BoolDataclassField(BoolField):
 
-    def action(self, dataclass: Any, field_name: str):
-        setattr(dataclass, field_name, self.current_value)
+    def __init__(self, field_name: str, current_value: bool = None):
+        self.field_name = field_name
+        super().__init__(current_value=current_value)
+
+    def action(self, dataclass: Any):
+        setattr(dataclass, self.field_name, self.current_value)
+
+    def __move_current(self, *args, **kwargs) -> None:
+        self.current_value = not self.current_value
+
+    def validate(self, put_action: bool = False, *args, **kwargs) -> None:
+        self.__move_current()
+        index = self.values.index(self.current_value)
+        self.current_alias = self.alias[index]
+        if put_action:
+            return partial(self.action)
