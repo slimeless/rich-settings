@@ -11,7 +11,7 @@ class FieldBase[FieldType](AbstractField):
     current_alias = None
 
     def __init__(
-            self, values: Tuple[FieldType, FieldType], alias: Tuple[str, str]
+        self, values: Tuple[FieldType, FieldType], alias: Tuple[str, str]
     ) -> None:
         if self.__validate_val_and_alias(values, alias):
             self.values = values
@@ -41,9 +41,7 @@ class FieldBase[FieldType](AbstractField):
                 )
             self.current_value = next(iter_current)
 
-    def validate(
-            self, negative: bool = False, *args, **kwargs
-    ) -> None:
+    def validate(self, negative: bool = False, *args, **kwargs) -> None:
         self.__move_current(negative)
         index = self.values.index(self.current_value)
         self.current_alias = self.alias[index]
@@ -70,7 +68,6 @@ class BoolField(FieldBase[bool]):
 
 
 class BoolDataclassField(BoolField):
-
     def __init__(self, field_name: str, current_value: bool = None):
         self.field_name = field_name
         super().__init__(current_value=current_value)

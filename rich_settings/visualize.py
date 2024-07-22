@@ -1,3 +1,4 @@
+from dataclasses import fields as dataclass_fields
 from queue import Queue
 from typing import Tuple, Any
 
@@ -5,22 +6,20 @@ from rich.console import ConsoleOptions, RenderResult, Console
 from rich.panel import Panel
 from rich.style import Style
 from rich.table import Table
-from dataclasses import fields as dataclass_fields
-from .base.abstract import (
-    AbstractVisualizeExecutor,
-    AbstractField
-)
+
+from .base.abstract import AbstractVisualizeExecutor, AbstractField
 from .base.styles import SELECTED
 from .field import BoolField, BoolDataclassField
 
 
 class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor):
     action_queue = Queue()
+
     def __init__(
-            self,
-            fields: Tuple[FieldType, ...],
-            columns: Tuple[str, ...],
-            style: Style = SELECTED,
+        self,
+        fields: Tuple[FieldType, ...],
+        columns: Tuple[str, ...],
+        style: Style = SELECTED,
     ):
         self.fields = fields
         self.columns = columns
@@ -28,7 +27,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self.selected = 0
 
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         table = Table(box=None, show_header=False)
         for i, *row in enumerate(zip(self.columns, self.fields)):
@@ -49,7 +48,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
 
     def validate(self, negative: bool = False) -> None:
         field = self.fields[self.selected]
-        put_action = True if hasattr(field, 'action') else False
+        put_action = True if hasattr(field, "action") else False
         maybe_action = field.validate(negative, put_action)
         if maybe_action:
             self.action_queue.put(maybe_action)
@@ -66,8 +65,16 @@ class BoolVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
 class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolDataclassField]):
     def __init__(self, dataclass: Any):
         self.dataclass = dataclass
-        columns = tuple(str(key.name) for key in dataclass_fields(self.dataclass) if key.type == bool)
-        fields = tuple(BoolDataclassField(field_name=key.name, current_value=key.default) for key in dataclass_fields(self.dataclass) if key.name in columns)
+        columns = tuple(
+            str(key.name)
+            for key in dataclass_fields(self.dataclass)
+            if key.type is bool
+        )
+        fields = tuple(
+            BoolDataclassField(field_name=key.name, current_value=key.default)
+            for key in dataclass_fields(self.dataclass)
+            if key.name in columns
+        )
         super().__init__(fields=fields, columns=columns)
         self.columns = columns
         self.fields = fields
@@ -76,4 +83,3 @@ class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolDataclassField]):
         while not self.action_queue.empty():
             action = self.action_queue.get()
             action(self.dataclass)
-

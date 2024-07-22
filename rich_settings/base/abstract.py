@@ -19,7 +19,7 @@ class AbstractField(ABC):
 class AbstractVisualizeExecutor(ABC):
     @abstractmethod
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         pass
 

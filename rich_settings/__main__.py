@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 
-from rich.console import Console
-
-from .field import BoolField
-from .visualize import BoolDataclassVisualizeExecutor, BaseVisualizeExecutor
-from rich.live import Live
 from readchar import readkey, key
+from rich.console import Console
+from rich.live import Live
+
+from .visualize import BoolDataclassVisualizeExecutor, BaseVisualizeExecutor
 
 console = Console()
 
@@ -36,9 +35,9 @@ def render(renderable_obj: BaseVisualizeExecutor):
                 renderable_obj.validate(negative=True)
 
             if ch == key.ENTER:
-                if hasattr(renderable_obj, 'execute_action_queue'):
+                if hasattr(renderable_obj, "execute_action_queue"):
                     renderable_obj.execute_action_queue()
-                return
+                    return
 
             live.update(renderable_obj, refresh=True)
 
