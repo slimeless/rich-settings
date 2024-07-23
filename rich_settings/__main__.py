@@ -44,7 +44,6 @@ def render(renderable_obj: BaseVisualizeExecutor):
 
 if __name__ == "__main__":
     a = Player()
-
     renderable = BoolDataclassVisualizeExecutor(a)
 
     render(renderable)
