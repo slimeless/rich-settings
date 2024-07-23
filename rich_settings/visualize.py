@@ -15,10 +15,10 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
     action_queue = Queue()
 
     def __init__(
-            self,
-            fields: Tuple[FieldType, ...],
-            columns: Tuple[str, ...],
-            style: Style = SELECTED,
+        self,
+        fields: Tuple[FieldType, ...],
+        columns: Tuple[str, ...],
+        style: Style = SELECTED,
     ):
         self.fields = fields
         self.columns = columns
@@ -26,7 +26,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self.selected = 0
 
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         table = Table(box=None, show_header=False)
         for i, *row in enumerate(zip(self.columns, self.fields)):
@@ -86,13 +86,16 @@ class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralDataclassFi
         columns = tuple(
             str(key.name)
             for key in dataclass_fields(self.dataclass)
-            if type(key.type) is type(Literal[''])
+            if type(key.type) is type(Literal[""])
         )
 
         fields = tuple(
             LiteralDataclassField(
-                values=get_args(key.type), field_name=key.name, current=key.default,
-                alias=tuple(str(x) for x in get_args(key.type)))
+                values=get_args(key.type),
+                field_name=key.name,
+                current=key.default,
+                alias=tuple(str(x) for x in get_args(key.type)),
+            )
             for key in dataclass_fields(self.dataclass)
             if str(key.name) in columns
         )

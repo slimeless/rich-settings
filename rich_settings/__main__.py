@@ -5,7 +5,10 @@ from readchar import readkey, key
 from rich.console import Console
 from rich.live import Live
 
-from .visualize import BoolDataclassVisualizeExecutor, BaseVisualizeExecutor, LiteralDataclassVisualizeExecutor
+from .visualize import (
+    BaseVisualizeExecutor,
+    LiteralDataclassVisualizeExecutor,
+)
 
 console = Console()
 
@@ -20,7 +23,7 @@ class Player:
 
 @dataclass
 class User:
-    name: Literal['Kirill', 'Alex', 'Alexey'] = 'Kirill'
+    name: Literal["Kirill", "Alex", "Alexey"] = "Kirill"
     age: Literal[21, 22] = 22
 
 

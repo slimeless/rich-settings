@@ -1,5 +1,4 @@
 from functools import partial
-from itertools import cycle, islice
 from typing import Tuple, Any
 
 from .base.abstract import AbstractField
@@ -12,7 +11,7 @@ class FieldBase[FieldType](AbstractField):
     current_alias = None
 
     def __init__(
-            self, values: Tuple[FieldType, ...], alias: Tuple[str, ...], current=None
+        self, values: Tuple[FieldType, ...], alias: Tuple[str, ...], current=None
     ) -> None:
         try:
             self.__validate_val_and_alias(val=values, alias=alias, current=current)
@@ -81,7 +80,13 @@ class BoolDataclassField(BoolField, DataclassActionMixin):
 
 
 class LiteralDataclassField(LiteralField, DataclassActionMixin):
-    def __init__(self, values: Tuple[Any, ...], alias: Tuple[str, ...], field_name: str, current: Any = None):
+    def __init__(
+        self,
+        values: Tuple[Any, ...],
+        alias: Tuple[str, ...],
+        field_name: str,
+        current: Any = None,
+    ):
         self.field_name = field_name
         super().__init__(current=current, values=values, alias=alias)
 
