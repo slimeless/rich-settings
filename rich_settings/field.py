@@ -3,6 +3,7 @@ from itertools import cycle, islice
 from typing import Tuple, Any
 
 from .base.abstract import AbstractField
+from .mixins import DataclassActionMixin
 
 
 class FieldBase[FieldType](AbstractField):
@@ -11,7 +12,7 @@ class FieldBase[FieldType](AbstractField):
     current_alias = None
 
     def __init__(
-        self, values: Tuple[FieldType, FieldType], alias: Tuple[str, str], current=None
+            self, values: Tuple[FieldType, ...], alias: Tuple[str, ...], current=None
     ) -> None:
         try:
             self.__validate_val_and_alias(val=values, alias=alias, current=current)
@@ -25,35 +26,25 @@ class FieldBase[FieldType](AbstractField):
     def __validate_val_and_alias(self, val: Tuple, alias: Tuple, current: Any) -> None:
         if len(val) != len(alias):
             raise ValueError("Values and aliases must be the same length")  # !
-        if not all([isinstance(x, self._value_type) for x in val]):
-            raise ValueError(f"Values must be a {self._value_type}")
         if len(val) == 0 or len(alias) == 0:
             raise ValueError("Values and aliases must not be empty")
         if current not in val and current is not None:
             raise ValueError(f"Current value must be one of {val}")
 
     def __move_current(self, negative: bool) -> None:
-        match negative, len(self.values):
-            case False, 2:
-                iter_current = cycle(self.values)
-            case True, 2:
-                iter_current = cycle(reversed(self.values))
-            case True, _:
-                iter_current = islice(
-                    cycle(reversed(self.values)),
-                    self.values.index(self.current_value),
-                    None,
-                )
+        if not self.values:
+            raise ValueError("The values list is empty")
 
-            case False, _:
-                iter_current = islice(
-                    cycle(self.values), self.values.index(self.current_value), None
-                )
-            case _:
-                raise ValueError("Something went wrong!")
-        self.current_value = next(iter_current)
-        index = self.values.index(self.current_value)
-        self.current_alias = self.alias[index]
+        current_index = self.values.index(self.current_value)
+        total_values = len(self.values)
+
+        if negative:
+            next_index = (current_index - 1) % total_values
+        else:
+            next_index = (current_index + 1) % total_values
+
+        self.current_value = self.values[next_index]
+        self.current_alias = self.alias[next_index]
 
     def validate(self, negative: bool = False, *args, **kwargs) -> None:
         self.__move_current(negative)
@@ -73,10 +64,26 @@ class BoolField(FieldBase[bool]):
         super().__init__(values=values, alias=aliases, current=current)
 
 
-class BoolDataclassField(BoolField):
+class LiteralField(FieldBase[Any]):
+    _value_type = Any
+
+    def __init__(self, values: Tuple[Any, ...], alias: Tuple[str, ...], current=None):
+        super().__init__(values=values, alias=alias, current=current)
+
+
+class BoolDataclassField(BoolField, DataclassActionMixin):
     def __init__(self, field_name: str, current: bool = None):
         self.field_name = field_name
         super().__init__(current=current)
 
     def action(self, dataclass: Any):
-        setattr(dataclass, self.field_name, self.current_value)
+        self.execute(dataclass, self.field_name, self.current_value)
+
+
+class LiteralDataclassField(LiteralField, DataclassActionMixin):
+    def __init__(self, values: Tuple[Any, ...], alias: Tuple[str, ...], field_name: str, current: Any = None):
+        self.field_name = field_name
+        super().__init__(current=current, values=values, alias=alias)
+
+    def action(self, dataclass: Any):
+        self.execute(dataclass, self.field_name, self.current_value)

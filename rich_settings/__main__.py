@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from typing import Literal
 
 from readchar import readkey, key
 from rich.console import Console
 from rich.live import Live
 
-from .visualize import BoolDataclassVisualizeExecutor, BaseVisualizeExecutor
+from .visualize import BoolDataclassVisualizeExecutor, BaseVisualizeExecutor, LiteralDataclassVisualizeExecutor
 
 console = Console()
 
@@ -15,6 +16,12 @@ class Player:
     is_maximized: bool = False
     is_animated: bool = False
     exc: str = ""
+
+
+@dataclass
+class User:
+    name: Literal['Kirill', 'Alex', 'Alexey'] = 'Kirill'
+    age: Literal[21, 22] = 22
 
 
 def render(renderable_obj: BaseVisualizeExecutor):
@@ -43,8 +50,8 @@ def render(renderable_obj: BaseVisualizeExecutor):
 
 
 if __name__ == "__main__":
-    a = Player()
-    renderable = BoolDataclassVisualizeExecutor(a)
+    a = User()
+    renderable = LiteralDataclassVisualizeExecutor(a)
 
     render(renderable)
     print(a)

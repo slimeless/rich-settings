@@ -1,5 +1,5 @@
 from queue import Queue
-from typing import Tuple, Any
+from typing import Tuple, Any, Literal, get_args
 from dataclasses import fields as dataclass_fields
 from rich.console import ConsoleOptions, RenderResult, Console
 from rich.panel import Panel
@@ -8,17 +8,17 @@ from rich.table import Table
 
 from .base.abstract import AbstractVisualizeExecutor, AbstractField
 from .base.styles import SELECTED
-from .field import BoolField, BoolDataclassField
+from .field import BoolField, BoolDataclassField, LiteralDataclassField
 
 
 class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor):
     action_queue = Queue()
 
     def __init__(
-        self,
-        fields: Tuple[FieldType, ...],
-        columns: Tuple[str, ...],
-        style: Style = SELECTED,
+            self,
+            fields: Tuple[FieldType, ...],
+            columns: Tuple[str, ...],
+            style: Style = SELECTED,
     ):
         self.fields = fields
         self.columns = columns
@@ -26,7 +26,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self.selected = 0
 
     def __rich_console__(
-        self, console: Console, options: ConsoleOptions
+            self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         table = Table(box=None, show_header=False)
         for i, *row in enumerate(zip(self.columns, self.fields)):
@@ -71,6 +71,30 @@ class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolDataclassField]):
             BoolDataclassField(field_name=key.name, current=key.default)
             for key in dataclass_fields(self.dataclass)
             if key.name in columns
+        )
+        super().__init__(fields=fields, columns=columns)
+
+    def execute_action_queue(self):
+        while not self.action_queue.empty():
+            action = self.action_queue.get()
+            action(self.dataclass)
+
+
+class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralDataclassField]):
+    def __init__(self, dataclass: Any):
+        self.dataclass = dataclass
+        columns = tuple(
+            str(key.name)
+            for key in dataclass_fields(self.dataclass)
+            if type(key.type) is type(Literal[''])
+        )
+
+        fields = tuple(
+            LiteralDataclassField(
+                values=get_args(key.type), field_name=key.name, current=key.default,
+                alias=tuple(str(x) for x in get_args(key.type)))
+            for key in dataclass_fields(self.dataclass)
+            if str(key.name) in columns
         )
         super().__init__(fields=fields, columns=columns)
 
