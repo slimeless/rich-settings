@@ -15,10 +15,10 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
     action_queue = Queue()
 
     def __init__(
-            self,
-            fields: Tuple[FieldType, ...],
-            columns: Tuple[str, ...],
-            style: Style = SELECTED,
+        self,
+        fields: Tuple[FieldType, ...],
+        columns: Tuple[str, ...],
+        style: Style = SELECTED,
     ):
         self.fields = fields
         self.columns = columns
@@ -26,7 +26,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self.selected = 0
 
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         table = Table(box=None, show_header=False)
         for i, *row in enumerate(zip(self.columns, self.fields)):

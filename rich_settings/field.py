@@ -11,7 +11,7 @@ class FieldBase[FieldType](AbstractField):
     current_alias = None
 
     def __init__(
-            self, values: Tuple[FieldType, FieldType], alias: Tuple[str, str], current=None
+        self, values: Tuple[FieldType, FieldType], alias: Tuple[str, str], current=None
     ) -> None:
         try:
             self.__validate_val_and_alias(val=values, alias=alias, current=current)
