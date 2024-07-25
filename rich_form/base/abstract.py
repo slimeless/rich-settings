@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 from rich.console import Console, ConsoleOptions, RenderResult
 
@@ -39,4 +38,3 @@ class AbstractForm(ABC):
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         pass
-

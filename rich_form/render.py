@@ -7,7 +7,6 @@ from .visualize import BaseVisualizeExecutor
 
 
 class BaseForm(AbstractForm):
-
     def __init__(self, renderable: BaseVisualizeExecutor) -> None:
         self.renderable = renderable
 
@@ -45,24 +44,45 @@ class BaseForm(AbstractForm):
 
 
 class Form(BaseForm):
-    def __init__(self, dataclass: ..., style: Style | str = None, selected_style: Style | str = None):
+    def __init__(
+        self,
+        dataclass: ...,
+        style: Style | str = None,
+        selected_style: Style | str = None,
+    ):
         from .visualize import MultiDataclassVisualizeExecutor
+
         super().__init__(MultiDataclassVisualizeExecutor(dataclass=dataclass))
 
     @classmethod
-    def from_raw_boolean_dataclass(cls, dataclass: ..., style: Style | str = None, selected_style: Style | str = None):
+    def from_raw_boolean_dataclass(
+        cls,
+        dataclass: ...,
+        style: Style | str = None,
+        selected_style: Style | str = None,
+    ):
         from .visualize import BoolDataclassVisualizeExecutor
+
         instance = cls.__new__(cls)
 
-        super(Form, instance).__init__(renderable=BoolDataclassVisualizeExecutor(dataclass=dataclass))
+        super(Form, instance).__init__(
+            renderable=BoolDataclassVisualizeExecutor(dataclass=dataclass)
+        )
 
         return instance
 
     @classmethod
-    def from_raw_literal_dataclass(cls, dataclass: ..., style: Style | str = None, selected_style: Style | str = None):
+    def from_raw_literal_dataclass(
+        cls,
+        dataclass: ...,
+        style: Style | str = None,
+        selected_style: Style | str = None,
+    ):
         from .visualize import LiteralDataclassVisualizeExecutor
 
         instance = cls.__new__(cls)
-        super(Form, instance).__init__(renderable=LiteralDataclassVisualizeExecutor(dataclass=dataclass))
+        super(Form, instance).__init__(
+            renderable=LiteralDataclassVisualizeExecutor(dataclass=dataclass)
+        )
 
         return instance
