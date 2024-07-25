@@ -40,7 +40,3 @@ class AbstractForm(ABC):
     ) -> RenderResult:
         pass
 
-    @classmethod
-    @abstractmethod
-    def from_names(cls, names: Tuple[str, ...], fields: Tuple[AbstractField, ...]):
-        pass

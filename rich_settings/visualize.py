@@ -15,10 +15,10 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
     action_queue = Queue()
 
     def __init__(
-        self,
-        fields: Tuple[FieldType, ...],
-        columns: Tuple[str, ...],
-        style: Style = SELECTED,
+            self,
+            fields: Tuple[FieldType, ...],
+            columns: Tuple[str, ...],
+            style: Style = SELECTED,
     ):
         self.fields = fields
         self.columns = columns
@@ -26,7 +26,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self.selected = 0
 
     def __rich_console__(
-        self, console: Console, options: ConsoleOptions
+            self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         table = Table(box=None, show_header=False)
         for i, *row in enumerate(zip(self.columns, self.fields)):
@@ -99,6 +99,23 @@ class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralField]):
             for key in dataclass_fields(self.dataclass)
             if str(key.name) in columns
         )
+        super().__init__(fields=fields, columns=columns)
+
+    def execute_action_queue(self):
+        while not self.action_queue.empty():
+            action = self.action_queue.get()
+            action(self.dataclass)
+
+
+class MultiDataclassVisualizeExecutor(BaseVisualizeExecutor[AbstractField]):
+    def __init__(self, dataclass: Any):
+        self.dataclass = dataclass
+        columns = tuple(
+            str(key.name)
+            for key in dataclass_fields(self.dataclass)
+            if isinstance(key.type, AbstractField)
+        )
+        fields = tuple(field.default for field in dataclass_fields(self.dataclass) if str(field.name) in columns)
         super().__init__(fields=fields, columns=columns)
 
     def execute_action_queue(self):

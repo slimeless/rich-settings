@@ -3,6 +3,7 @@ from typing import Tuple, Any
 
 from .base.abstract import AbstractField
 from .mixins import DataclassActionMixin
+from .base.exc import FieldValueException
 
 
 class FieldBase[FieldType](AbstractField):
@@ -11,7 +12,7 @@ class FieldBase[FieldType](AbstractField):
     current_alias = None
 
     def __init__(
-        self, values: Tuple[FieldType, ...], alias: Tuple[str, ...], current=None
+            self, values: Tuple[FieldType, ...], alias: Tuple[str, ...], current=None
     ) -> None:
         try:
             self.__validate_val_and_alias(val=values, alias=alias, current=current)
@@ -22,14 +23,16 @@ class FieldBase[FieldType](AbstractField):
         except Exception as e:
             raise e
 
-    @staticmethod
-    def __validate_val_and_alias(val: Tuple, alias: Tuple, current: Any) -> None:
+    def __validate_val_and_alias(self, val: Tuple, alias: Tuple, current: Any) -> None:
+        if self._value_type is not Any:
+            if not all(isinstance(x, self._value_type) for x in val):
+                raise FieldValueException(f"Values must be of type {FieldType}")
         if len(val) != len(alias):
-            raise ValueError("Values and aliases must be the same length")  # !
+            raise FieldValueException("Values and aliases must be the same length")  # !
         if len(val) == 0 or len(alias) == 0:
-            raise ValueError("Values and aliases must not be empty")
+            raise FieldValueException("Values and aliases must not be empty")
         if current not in val and current is not None:
-            raise ValueError(f"Current value must be one of {val}")
+            raise FieldValueException(f"Current value must be one of {val}")
 
     def __move_current(self, negative: bool) -> None:
         if not self.values:
@@ -71,6 +74,8 @@ class BaseLiteralField(FieldBase[Any]):
 
 
 class BoolField(BaseBoolField, DataclassActionMixin):
+    _value_type = bool
+
     def __init__(self, field_name: str, current: bool = None):
         self.field_name = field_name
         super().__init__(current=current)
@@ -80,12 +85,14 @@ class BoolField(BaseBoolField, DataclassActionMixin):
 
 
 class LiteralField(BaseLiteralField, DataclassActionMixin):
+    _value_type = Any
+
     def __init__(
-        self,
-        values: Tuple[Any, ...],
-        alias: Tuple[str, ...],
-        field_name: str,
-        current: Any = None,
+            self,
+            values: Tuple[Any, ...],
+            alias: Tuple[str, ...],
+            field_name: str,
+            current: Any = None,
     ):
         self.field_name = field_name
         super().__init__(current=current, values=values, alias=alias)
