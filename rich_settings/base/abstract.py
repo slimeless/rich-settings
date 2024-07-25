@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 from rich.console import Console, ConsoleOptions, RenderResult
 
@@ -25,4 +26,21 @@ class AbstractVisualizeExecutor(ABC):
 
     @abstractmethod
     def validate(self, *args, **kwargs):
+        pass
+
+
+class AbstractForm(ABC):
+    @abstractmethod
+    def render(self):
+        pass
+
+    @abstractmethod
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> RenderResult:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def from_names(cls, names: Tuple[str, ...], fields: Tuple[AbstractField, ...]):
         pass

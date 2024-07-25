@@ -8,7 +8,7 @@ from rich.table import Table
 
 from .base.abstract import AbstractVisualizeExecutor, AbstractField
 from .base.styles import SELECTED
-from .field import BoolField, BoolDataclassField, LiteralDataclassField
+from .field import BaseBoolField, BoolField, LiteralField
 
 
 class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor):
@@ -53,13 +53,13 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
             self.action_queue.put(maybe_action)
 
 
-class BoolVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
+class BoolVisualizeExecutor(BaseVisualizeExecutor[BaseBoolField]):
     def __init__(self, columns: Tuple[str, ...]):
-        fields = tuple(BoolField() for _ in range(len(columns)))
+        fields = tuple(BaseBoolField() for _ in range(len(columns)))
         super().__init__(fields=fields, columns=columns)
 
 
-class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolDataclassField]):
+class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
     def __init__(self, dataclass: Any):
         self.dataclass = dataclass
         columns = tuple(
@@ -68,7 +68,7 @@ class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolDataclassField]):
             if key.type is bool
         )
         fields = tuple(
-            BoolDataclassField(field_name=key.name, current=key.default)
+            BoolField(field_name=key.name, current=key.default)
             for key in dataclass_fields(self.dataclass)
             if key.name in columns
         )
@@ -80,7 +80,7 @@ class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolDataclassField]):
             action(self.dataclass)
 
 
-class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralDataclassField]):
+class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralField]):
     def __init__(self, dataclass: Any):
         self.dataclass = dataclass
         columns = tuple(
@@ -90,7 +90,7 @@ class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralDataclassFi
         )
 
         fields = tuple(
-            LiteralDataclassField(
+            LiteralField(
                 values=get_args(key.type),
                 field_name=key.name,
                 current=key.default,

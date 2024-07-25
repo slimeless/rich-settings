@@ -22,7 +22,8 @@ class FieldBase[FieldType](AbstractField):
         except Exception as e:
             raise e
 
-    def __validate_val_and_alias(self, val: Tuple, alias: Tuple, current: Any) -> None:
+    @staticmethod
+    def __validate_val_and_alias(val: Tuple, alias: Tuple, current: Any) -> None:
         if len(val) != len(alias):
             raise ValueError("Values and aliases must be the same length")  # !
         if len(val) == 0 or len(alias) == 0:
@@ -41,7 +42,6 @@ class FieldBase[FieldType](AbstractField):
             next_index = (current_index - 1) % total_values
         else:
             next_index = (current_index + 1) % total_values
-
         self.current_value = self.values[next_index]
         self.current_alias = self.alias[next_index]
 
@@ -55,7 +55,7 @@ class FieldBase[FieldType](AbstractField):
         return self.current_alias
 
 
-class BoolField(FieldBase[bool]):
+class BaseBoolField(FieldBase[bool]):
     _value_type = bool
 
     def __init__(self, aliases: Tuple[str, str] = ("ON", "OFF"), current=None):
@@ -63,14 +63,14 @@ class BoolField(FieldBase[bool]):
         super().__init__(values=values, alias=aliases, current=current)
 
 
-class LiteralField(FieldBase[Any]):
+class BaseLiteralField(FieldBase[Any]):
     _value_type = Any
 
     def __init__(self, values: Tuple[Any, ...], alias: Tuple[str, ...], current=None):
         super().__init__(values=values, alias=alias, current=current)
 
 
-class BoolDataclassField(BoolField, DataclassActionMixin):
+class BoolField(BaseBoolField, DataclassActionMixin):
     def __init__(self, field_name: str, current: bool = None):
         self.field_name = field_name
         super().__init__(current=current)
@@ -79,7 +79,7 @@ class BoolDataclassField(BoolField, DataclassActionMixin):
         self.execute(dataclass, self.field_name, self.current_value)
 
 
-class LiteralDataclassField(LiteralField, DataclassActionMixin):
+class LiteralField(BaseLiteralField, DataclassActionMixin):
     def __init__(
         self,
         values: Tuple[Any, ...],
