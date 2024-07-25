@@ -3,6 +3,8 @@ from rich.style import Style
 from .base.abstract import AbstractForm
 from readchar import readkey, key
 from rich.live import Live
+
+from .base.styles import PanelStyle
 from .visualize import BaseVisualizeExecutor
 
 
@@ -47,18 +49,22 @@ class Form(BaseForm):
     def __init__(
         self,
         dataclass: ...,
-        style: Style | str = None,
+        panel: PanelStyle = None,
         selected_style: Style | str = None,
     ):
         from .visualize import MultiDataclassVisualizeExecutor
 
-        super().__init__(MultiDataclassVisualizeExecutor(dataclass=dataclass))
+        super().__init__(
+            renderable=MultiDataclassVisualizeExecutor(
+                dataclass=dataclass, selected_style=selected_style, panel=panel
+            )
+        )
 
     @classmethod
     def from_raw_boolean_dataclass(
         cls,
         dataclass: ...,
-        style: Style | str = None,
+        panel: PanelStyle = None,
         selected_style: Style | str = None,
     ):
         from .visualize import BoolDataclassVisualizeExecutor
@@ -66,7 +72,9 @@ class Form(BaseForm):
         instance = cls.__new__(cls)
 
         super(Form, instance).__init__(
-            renderable=BoolDataclassVisualizeExecutor(dataclass=dataclass)
+            renderable=BoolDataclassVisualizeExecutor(
+                dataclass=dataclass, selected_style=selected_style, panel=panel
+            )
         )
 
         return instance
@@ -75,14 +83,16 @@ class Form(BaseForm):
     def from_raw_literal_dataclass(
         cls,
         dataclass: ...,
-        style: Style | str = None,
+        panel: PanelStyle = None,
         selected_style: Style | str = None,
     ):
         from .visualize import LiteralDataclassVisualizeExecutor
 
         instance = cls.__new__(cls)
         super(Form, instance).__init__(
-            renderable=LiteralDataclassVisualizeExecutor(dataclass=dataclass)
+            renderable=LiteralDataclassVisualizeExecutor(
+                dataclass=dataclass, selected_style=selected_style, panel=panel
+            )
         )
 
         return instance

@@ -7,7 +7,7 @@ from rich.style import Style
 from rich.table import Table
 
 from .base.abstract import AbstractVisualizeExecutor, AbstractField
-from .base.styles import SELECTED
+from .base.styles import SELECTED, PanelStyle
 from .field import BaseBoolField, BoolField, LiteralField
 
 
@@ -18,11 +18,13 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self,
         fields: Tuple[FieldType, ...],
         columns: Tuple[str, ...],
-        style: Style = SELECTED,
+        selected_style: Style | str = None,
+        panel: PanelStyle = None,
     ):
         self.fields = fields
         self.columns = columns
-        self.style = style
+        self.selected_style = selected_style if selected_style else SELECTED
+        self.panel = panel
         self.selected = 0
 
     def __rich_console__(
@@ -32,17 +34,14 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         for i, *row in enumerate(zip(self.columns, self.fields)):
             table.add_row(
                 *(str(x) for x in row[0]),
-                style=self.style if i == self.selected else None,
+                style=self.selected_style if i == self.selected else None,
             )
 
         yield Panel.fit(
             table,
-            border_style="blue",
-            title_align="right",
-            title="[bold blue]Settings",
-            style="none",
-            subtitle_align="left",
-            subtitle=f"[bold blue]{self.selected}",
+            **self.panel.__dict__
+            if self.panel
+            else {"border_style": "blue", "title": "[bold blue]Fields"},
         )
 
     def validate(self, negative: bool = False) -> None:
@@ -54,13 +53,25 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
 
 
 class BoolVisualizeExecutor(BaseVisualizeExecutor[BaseBoolField]):
-    def __init__(self, columns: Tuple[str, ...]):
+    def __init__(
+        self,
+        columns: Tuple[str, ...],
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
+    ):
         fields = tuple(BaseBoolField() for _ in range(len(columns)))
-        super().__init__(fields=fields, columns=columns)
+        super().__init__(
+            fields=fields, columns=columns, selected_style=selected_style, panel=panel
+        )
 
 
 class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
-    def __init__(self, dataclass: Any):
+    def __init__(
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
+    ):
         self.dataclass = dataclass
         columns = tuple(
             str(key.name)
@@ -72,7 +83,9 @@ class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
             for key in dataclass_fields(self.dataclass)
             if key.name in columns
         )
-        super().__init__(fields=fields, columns=columns)
+        super().__init__(
+            fields=fields, columns=columns, selected_style=selected_style, panel=panel
+        )
 
     def execute_action_queue(self):
         while not self.action_queue.empty():
@@ -81,7 +94,12 @@ class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
 
 
 class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralField]):
-    def __init__(self, dataclass: Any):
+    def __init__(
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
+    ):
         self.dataclass = dataclass
         columns = tuple(
             str(key.name)
@@ -99,7 +117,9 @@ class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralField]):
             for key in dataclass_fields(self.dataclass)
             if str(key.name) in columns
         )
-        super().__init__(fields=fields, columns=columns)
+        super().__init__(
+            fields=fields, columns=columns, selected_style=selected_style, panel=panel
+        )
 
     def execute_action_queue(self):
         while not self.action_queue.empty():
@@ -108,7 +128,12 @@ class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralField]):
 
 
 class MultiDataclassVisualizeExecutor(BaseVisualizeExecutor[AbstractField]):
-    def __init__(self, dataclass: Any):
+    def __init__(
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
+    ):
         self.dataclass = dataclass
         columns = tuple(
             str(key.name)
@@ -120,7 +145,9 @@ class MultiDataclassVisualizeExecutor(BaseVisualizeExecutor[AbstractField]):
             for field in dataclass_fields(self.dataclass)
             if str(field.name) in columns
         )
-        super().__init__(fields=fields, columns=columns)
+        super().__init__(
+            fields=fields, columns=columns, selected_style=selected_style, panel=panel
+        )
 
     def execute_action_queue(self):
         while not self.action_queue.empty():

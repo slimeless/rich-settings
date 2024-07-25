@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 from rich.console import Console
-
 from .render import Form
+from .base.styles import PanelStyle
 
 cons = Console()
 
@@ -24,7 +24,9 @@ class User:
 
 if __name__ == "__main__":
     a = User()
-
-    form = Form.from_raw_literal_dataclass(dataclass=a)
+    panel = PanelStyle(title="[bold green]User", border_style="green", subtitle="Age")
+    form = Form.from_raw_literal_dataclass(
+        dataclass=a, panel=panel, selected_style="bold black on blue"
+    )
     cons.print(form)
     print(a)
