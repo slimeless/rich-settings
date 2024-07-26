@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rich-settings"
+name = "rich-form"
 version = "0.1.0"
 description = ""
 authors = ["kiril <stopcrybby@gmail.com>"]

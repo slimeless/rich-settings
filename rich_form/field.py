@@ -76,9 +76,9 @@ class BaseLiteralField(FieldBase[Any]):
 class BoolField(BaseBoolField, DataclassActionMixin):
     _value_type = bool
 
-    def __init__(self, field_name: str, current: bool = None):
+    def __init__(self, field_name: str, current: bool = None, aliases: Tuple[str, str] = ("ON", "OFF")):
         self.field_name = field_name
-        super().__init__(current=current)
+        super().__init__(current=current, aliases=aliases)
 
     def action(self, dataclass: Any):
         self.execute(dataclass, self.field_name, self.current_value)

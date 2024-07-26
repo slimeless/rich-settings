@@ -7,7 +7,7 @@ from rich.style import Style
 from rich.table import Table
 
 from .base.abstract import AbstractVisualizeExecutor, AbstractField
-from .base.styles import SELECTED, PanelStyle
+from .base.styles import SELECTED, PanelStyle, BASIC
 from .field import BaseBoolField, BoolField, LiteralField
 
 
@@ -24,7 +24,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self.fields = fields
         self.columns = columns
         self.selected_style = selected_style if selected_style else SELECTED
-        self.panel = panel
+        self.panel = panel if panel else BASIC
         self.selected = 0
 
     def __rich_console__(
@@ -40,8 +40,6 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         yield Panel.fit(
             table,
             **self.panel.__dict__
-            if self.panel
-            else {"border_style": "blue", "title": "[bold blue]Fields"},
         )
 
     def validate(self, negative: bool = False) -> None:
@@ -138,7 +136,7 @@ class MultiDataclassVisualizeExecutor(BaseVisualizeExecutor[AbstractField]):
         columns = tuple(
             str(key.name)
             for key in dataclass_fields(self.dataclass)
-            if isinstance(key.type, AbstractField)
+            if isinstance(key.default, AbstractField)
         )
         fields = tuple(
             field.default
