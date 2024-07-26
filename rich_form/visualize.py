@@ -37,10 +37,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
                 style=self.selected_style if i == self.selected else None,
             )
 
-        yield Panel.fit(
-            table,
-            **self.panel.__dict__
-        )
+        yield Panel.fit(table, **self.panel.__dict__)
 
     def validate(self, negative: bool = False) -> None:
         field = self.fields[self.selected]

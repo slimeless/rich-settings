@@ -23,4 +23,4 @@ class PanelStyle:
 
 
 SELECTED = Style(color="black", bold=True, bgcolor="green")
-BASIC = PanelStyle(title='[bold green]Data', border_style="green")
+BASIC = PanelStyle(title="[bold green]Data", border_style="green")
