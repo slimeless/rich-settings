@@ -16,11 +16,11 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
     action_queue = Queue()
 
     def __init__(
-            self,
-            fields: Tuple[FieldType, ...],
-            columns: Tuple[str, ...],
-            selected_style: Style | str = None,
-            panel: PanelStyle = None,
+        self,
+        fields: Tuple[FieldType, ...],
+        columns: Tuple[str, ...],
+        selected_style: Style | str = None,
+        panel: PanelStyle = None,
     ):
         self.fields = fields
         self.columns = columns
@@ -29,7 +29,7 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
         self.selected = 0
 
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         table = Table(box=None, show_header=False)
         for i, *row in enumerate(zip(self.columns, self.fields)):
@@ -50,10 +50,10 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor)
 
 class BoolVisualizeExecutor(BaseVisualizeExecutor[BaseBoolField]):
     def __init__(
-            self,
-            columns: Tuple[str, ...],
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        columns: Tuple[str, ...],
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ):
         fields = tuple(BaseBoolField() for _ in range(len(columns)))
         super().__init__(
@@ -63,10 +63,10 @@ class BoolVisualizeExecutor(BaseVisualizeExecutor[BaseBoolField]):
 
 class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
     def __init__(
-            self,
-            dataclass: Any,
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ):
         self.dataclass = dataclass
         columns = tuple(
@@ -91,10 +91,10 @@ class BoolDataclassVisualizeExecutor(BaseVisualizeExecutor[BoolField]):
 
 class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralField]):
     def __init__(
-            self,
-            dataclass: Any,
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ):
         self.dataclass = dataclass
         columns = tuple(
@@ -125,10 +125,10 @@ class LiteralDataclassVisualizeExecutor(BaseVisualizeExecutor[LiteralField]):
 
 class MultiDataclassVisualizeExecutor(BaseVisualizeExecutor[AbstractField]):
     def __init__(
-            self,
-            dataclass: Any,
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ):
         self.dataclass = dataclass
         columns = tuple(
@@ -153,25 +153,24 @@ class MultiDataclassVisualizeExecutor(BaseVisualizeExecutor[AbstractField]):
 
 class StaticTableVisualizeExecutor(BaseVisualizeExecutor[StaticField]):
     def __init__(
-            self,
-            table: Table,
+        self,
+        table: Table,
     ):
         columns, rows = get_table_data(table)
         fields = tuple(StaticField(row) for row in rows)
         self.table_style = get_table_style(table)
-        super().__init__(
-            fields=fields, columns=columns
-        )
+        super().__init__(fields=fields, columns=columns)
 
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-
         table = Table(**self.table_style)
         for column in self.columns:
             table.add_column(column)
         for i, field in enumerate(self.fields):
-            table.add_row(*list(field), style=self.selected_style if i == self.selected else None)
+            table.add_row(
+                *list(field), style=self.selected_style if i == self.selected else None
+            )
 
         yield table
 

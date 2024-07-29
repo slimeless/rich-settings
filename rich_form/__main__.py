@@ -5,6 +5,7 @@ from rich.console import Console
 from .render import Form
 from .field import LiteralField, BoolField
 from rich.table import Table
+
 cons = Console()
 
 
@@ -19,6 +20,7 @@ def generate_table(rows, columns):
         table.add_row(*row_data)
 
     return table
+
 
 @dataclass
 class Player:
