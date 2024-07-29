@@ -4,9 +4,21 @@ from typing import Literal
 from rich.console import Console
 from .render import Form
 from .field import LiteralField, BoolField
-
+from rich.table import Table
 cons = Console()
 
+
+def generate_table(rows, columns):
+    table = Table(show_header=True, header_style="bold magenta")
+
+    for i in range(columns):
+        table.add_column(f"Column {i + 1}", width=12)
+
+    for i in range(rows):
+        row_data = [f"Row {i + 1}, Col {j + 1}" for j in range(columns)]
+        table.add_row(*row_data)
+
+    return table
 
 @dataclass
 class Player:
@@ -33,7 +45,6 @@ class User1:
 
 
 if __name__ == "__main__":
-    a = User1()
-    form = Form(dataclass=a)
+    table = generate_table(5, 5)
+    form = Form.from_rich_table(table)
     cons.print(form)
-    print(a)

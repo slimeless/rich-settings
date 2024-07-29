@@ -12,7 +12,7 @@ class FieldBase[FieldType](AbstractField):
     current_alias = None
 
     def __init__(
-        self, values: Tuple[FieldType, ...], alias: Tuple[str, ...], current=None
+            self, values: Tuple[FieldType, ...], alias: Tuple[str, ...], current=None
     ) -> None:
         try:
             self.__validate_val_and_alias(val=values, alias=alias, current=current)
@@ -77,10 +77,10 @@ class BoolField(BaseBoolField, DataclassActionMixin):
     _value_type = bool
 
     def __init__(
-        self,
-        field_name: str,
-        current: bool = None,
-        aliases: Tuple[str, str] = ("ON", "OFF"),
+            self,
+            field_name: str,
+            current: bool = None,
+            aliases: Tuple[str, str] = ("ON", "OFF"),
     ):
         self.field_name = field_name
         super().__init__(current=current, aliases=aliases)
@@ -93,14 +93,28 @@ class LiteralField(BaseLiteralField, DataclassActionMixin):
     _value_type = Any
 
     def __init__(
-        self,
-        values: Tuple[Any, ...],
-        alias: Tuple[str, ...],
-        field_name: str,
-        current: Any = None,
+            self,
+            values: Tuple[Any, ...],
+            alias: Tuple[str, ...],
+            field_name: str,
+            current: Any = None,
     ):
         self.field_name = field_name
         super().__init__(current=current, values=values, alias=alias)
 
     def action(self, dataclass: Any):
         self.execute(dataclass, self.field_name, self.current_value)
+
+
+class StaticField(FieldBase[Any]):
+    _value_type = Any
+
+    def __init__(self, values: Tuple[Any, ...], current=None):
+        super().__init__(values=values, current=current, alias=values)
+
+    def __iter__(self):
+        return iter(self.values)
+
+    def validate(self, *args, **kwargs) -> None:
+        pass
+

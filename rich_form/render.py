@@ -1,5 +1,7 @@
 from rich.console import ConsoleOptions, Console
 from rich.style import Style
+from rich.table import Table
+
 from .base.abstract import AbstractForm
 from readchar import readkey, key
 from rich.live import Live
@@ -93,6 +95,17 @@ class Form(BaseForm):
             renderable=LiteralDataclassVisualizeExecutor(
                 dataclass=dataclass, selected_style=selected_style, panel=panel
             )
+        )
+
+        return instance
+
+    @classmethod
+    def from_rich_table(cls, table: Table):
+        from .visualize import StaticTableVisualizeExecutor
+
+        instance = cls.__new__(cls)
+        super(Form, instance).__init__(
+            renderable=StaticTableVisualizeExecutor(table=table)
         )
 
         return instance
