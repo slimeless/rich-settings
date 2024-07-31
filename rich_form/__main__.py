@@ -49,4 +49,5 @@ class User1:
 if __name__ == "__main__":
     table = generate_table(5, 5)
     form = Form.from_rich_table(table)
-    cons.print(form)
+    res = form.render(cons)
+    print(res)

@@ -1,11 +1,10 @@
-from rich.console import ConsoleOptions, Console
+from readchar import readkey, key
+from rich.console import Console
+from rich.live import Live
 from rich.style import Style
 from rich.table import Table
 
 from .base.abstract import AbstractForm
-from readchar import readkey, key
-from rich.live import Live
-
 from .base.styles import PanelStyle
 from .visualize import BaseVisualizeExecutor
 
@@ -14,7 +13,7 @@ class BaseForm(AbstractForm):
     def __init__(self, renderable: BaseVisualizeExecutor) -> None:
         self.renderable = renderable
 
-    def render(self):
+    def _render(self):
         with Live(self.renderable, auto_refresh=False) as live:
             while True:
                 ch = readkey()
@@ -33,26 +32,26 @@ class BaseForm(AbstractForm):
 
                 if ch == key.ENTER:
                     if hasattr(self.renderable, "execute_action_queue"):
-                        self.renderable.execute_action_queue()
-                        return
+                        res = self.renderable.execute_action_queue()
+                        return res
 
                 live.update(self.renderable, refresh=True)
 
-    def __rich_console__(self, console: Console, options: ConsoleOptions):
+    def render(self, console: Console):
         from os import devnull
 
         file = open(devnull, "w")
         console.file = file
-        self.render()
-        return ""
+        res = self._render()
+        return res
 
 
 class Form(BaseForm):
     def __init__(
-        self,
-        dataclass: ...,
-        panel: PanelStyle = None,
-        selected_style: Style | str = None,
+            self,
+            dataclass: ...,
+            panel: PanelStyle = None,
+            selected_style: Style | str = None,
     ):
         from .visualize import MultiDataclassVisualizeExecutor
 
@@ -64,10 +63,10 @@ class Form(BaseForm):
 
     @classmethod
     def from_raw_boolean_dataclass(
-        cls,
-        dataclass: ...,
-        panel: PanelStyle = None,
-        selected_style: Style | str = None,
+            cls,
+            dataclass: ...,
+            panel: PanelStyle = None,
+            selected_style: Style | str = None,
     ):
         from .visualize import BoolDataclassVisualizeExecutor
 
@@ -83,10 +82,10 @@ class Form(BaseForm):
 
     @classmethod
     def from_raw_literal_dataclass(
-        cls,
-        dataclass: ...,
-        panel: PanelStyle = None,
-        selected_style: Style | str = None,
+            cls,
+            dataclass: ...,
+            panel: PanelStyle = None,
+            selected_style: Style | str = None,
     ):
         from .visualize import LiteralDataclassVisualizeExecutor
 

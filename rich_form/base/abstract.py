@@ -30,11 +30,11 @@ class AbstractVisualizeExecutor(ABC):
 
 class AbstractForm(ABC):
     @abstractmethod
-    def render(self):
+    def _render(self):
         pass
 
     @abstractmethod
-    def __rich_console__(
-        self, console: Console, options: ConsoleOptions
+    def render(
+        self, console: Console
     ) -> RenderResult:
         pass
