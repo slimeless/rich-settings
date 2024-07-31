@@ -34,7 +34,5 @@ class AbstractForm(ABC):
         pass
 
     @abstractmethod
-    def render(
-        self, console: Console
-    ) -> RenderResult:
+    def render(self, console: Console) -> RenderResult:
         pass

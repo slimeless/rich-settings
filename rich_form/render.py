@@ -48,10 +48,10 @@ class BaseForm(AbstractForm):
 
 class Form(BaseForm):
     def __init__(
-            self,
-            dataclass: ...,
-            panel: PanelStyle = None,
-            selected_style: Style | str = None,
+        self,
+        dataclass: ...,
+        panel: PanelStyle = None,
+        selected_style: Style | str = None,
     ):
         from .visualize import MultiDataclassVisualizeExecutor
 
@@ -63,10 +63,10 @@ class Form(BaseForm):
 
     @classmethod
     def from_raw_boolean_dataclass(
-            cls,
-            dataclass: ...,
-            panel: PanelStyle = None,
-            selected_style: Style | str = None,
+        cls,
+        dataclass: ...,
+        panel: PanelStyle = None,
+        selected_style: Style | str = None,
     ):
         from .visualize import BoolDataclassVisualizeExecutor
 
@@ -82,10 +82,10 @@ class Form(BaseForm):
 
     @classmethod
     def from_raw_literal_dataclass(
-            cls,
-            dataclass: ...,
-            panel: PanelStyle = None,
-            selected_style: Style | str = None,
+        cls,
+        dataclass: ...,
+        panel: PanelStyle = None,
+        selected_style: Style | str = None,
     ):
         from .visualize import LiteralDataclassVisualizeExecutor
 
