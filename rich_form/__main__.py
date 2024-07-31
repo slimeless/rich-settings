@@ -38,9 +38,7 @@ class User:
 
 @dataclass
 class User1:
-    name: str = LiteralField(
-        values=(0, 1, 2, 3, 4), field_name="name"
-    )
+    name: str = LiteralField(values=(0, 1, 2, 3, 4), field_name="name")
     age: bool = BoolField(
         field_name="age", current=False, aliases=("enable", "disable")
     )
