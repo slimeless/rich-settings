@@ -39,7 +39,7 @@ class User:
 @dataclass
 class User1:
     name: str = LiteralField(
-        values=(0, 1, 2, 3, 4), alias=("a", "b", "c", "d", "e"), field_name="name"
+        values=(0, 1, 2, 3, 4), field_name="name"
     )
     age: bool = BoolField(
         field_name="age", current=False, aliases=("enable", "disable")
@@ -48,6 +48,7 @@ class User1:
 
 if __name__ == "__main__":
     table = generate_table(5, 5)
-    form = Form.from_rich_table(table)
+    a = User1()
+    form = Form(a)
     res = form.render(cons)
     print(res)
