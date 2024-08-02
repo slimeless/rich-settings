@@ -12,6 +12,7 @@ from .visualize import BaseVisualizeExecutor
 class BaseForm(AbstractForm):
     def __init__(self, renderable: BaseVisualizeExecutor) -> None:
         self.renderable = renderable
+        self.confirm = False
 
     def _render(self):
         with Live(self.renderable, auto_refresh=False) as live:
@@ -32,16 +33,11 @@ class BaseForm(AbstractForm):
 
                 if ch == key.ENTER:
                     if hasattr(self.renderable, "execute_action_queue"):
-                        res = self.renderable.execute_action_queue()
-                        return res
+                        return self.renderable.execute_action_queue()
 
                 live.update(self.renderable, refresh=True)
 
-    def render(self, console: Console):
-        from os import devnull
-
-        file = open(devnull, "w")
-        console.file = file
+    def render(self):
         res = self._render()
         return res
 

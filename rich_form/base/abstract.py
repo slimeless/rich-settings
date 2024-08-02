@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from rich.console import Console, ConsoleOptions, RenderResult
 
@@ -29,10 +30,7 @@ class AbstractVisualizeExecutor(ABC):
 
 
 class AbstractForm(ABC):
-    @abstractmethod
-    def _render(self):
-        pass
 
     @abstractmethod
-    def render(self, console: Console) -> RenderResult:
+    def render(self) -> Any:
         pass
