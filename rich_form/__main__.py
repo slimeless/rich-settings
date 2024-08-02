@@ -48,5 +48,5 @@ if __name__ == "__main__":
     table = generate_table(5, 5)
     a = User1()
     form = Form(a)
-    res = form.render(cons)
-    print(res)
+    cons.print(form)
+    print(a)

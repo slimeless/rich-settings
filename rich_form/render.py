@@ -1,4 +1,5 @@
 from readchar import readkey, key
+from rich.console import ConsoleOptions, Console
 from rich.live import Live
 from rich.style import Style
 from rich.table import Table
@@ -39,6 +40,12 @@ class BaseForm(AbstractForm):
     def render(self):
         res = self._render()
         return res
+
+    def __rich_console__(self, console: Console, options: ConsoleOptions):
+        from os import devnull
+        file = open(devnull, "w")
+        res = self._render()
+        return ''
 
 
 class Form(BaseForm):
