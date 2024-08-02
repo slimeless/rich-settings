@@ -30,7 +30,6 @@ class AbstractVisualizeExecutor(ABC):
 
 
 class AbstractForm(ABC):
-
     @abstractmethod
     def render(self) -> Any:
         pass

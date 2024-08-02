@@ -1,5 +1,4 @@
 from readchar import readkey, key
-from rich.console import Console
 from rich.live import Live
 from rich.style import Style
 from rich.table import Table
