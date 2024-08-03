@@ -18,11 +18,11 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor,
     action_queue = Queue()
 
     def __init__(
-            self,
-            fields: Tuple[FieldType, ...],
-            columns: Tuple[str, ...],
-            selected_style: Style | str = None,
-            panel: PanelStyle = None,
+        self,
+        fields: Tuple[FieldType, ...],
+        columns: Tuple[str, ...],
+        selected_style: Style | str = None,
+        panel: PanelStyle = None,
     ):
         self.fields = fields
         self.columns = columns
@@ -40,12 +40,12 @@ class BaseVisualizeExecutor[FieldType: AbstractField](AbstractVisualizeExecutor,
 
 class BaseDataclassVisualizeExecutor(BaseVisualizeExecutor[BaseDataclassField]):
     def __init__(
-            self,
-            dataclass: Any,
-            columns: Tuple[str, ...],
-            fields: Tuple[AbstractField, ...],
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        dataclass: Any,
+        columns: Tuple[str, ...],
+        fields: Tuple[AbstractField, ...],
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ) -> None:
         self.dataclass = dataclass
         super().__init__(
@@ -58,7 +58,7 @@ class BaseDataclassVisualizeExecutor(BaseVisualizeExecutor[BaseDataclassField]):
                 self.dataclass.__dict__[key] = value.current_value
 
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         head = Table(box=None, show_header=False)
         table_of_description = Table(box=None, show_header=False)
@@ -67,7 +67,9 @@ class BaseDataclassVisualizeExecutor(BaseVisualizeExecutor[BaseDataclassField]):
             content_row = (column, str(field))
             desc_row = field.description
 
-            table_of_content.add_row(*content_row, style=self.selected_style if i == self.selected else None)
+            table_of_content.add_row(
+                *content_row, style=self.selected_style if i == self.selected else None
+            )
             table_of_description.add_row(desc_row)
 
         content_panel = Panel.fit(table_of_content, **self.panel.__dict__)
@@ -85,10 +87,10 @@ class BaseDataclassVisualizeExecutor(BaseVisualizeExecutor[BaseDataclassField]):
 
 class BoolDataclassVisualizeExecutor(BaseDataclassVisualizeExecutor):
     def __init__(
-            self,
-            dataclass: Any,
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ):
         columns = tuple(
             str(key.name) for key in dataclass_fields(dataclass) if key.type is bool
@@ -109,10 +111,10 @@ class BoolDataclassVisualizeExecutor(BaseDataclassVisualizeExecutor):
 
 class LiteralDataclassVisualizeExecutor(BaseDataclassVisualizeExecutor):
     def __init__(
-            self,
-            dataclass: Any,
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ):
         columns = tuple(
             str(key.name)
@@ -141,10 +143,10 @@ class LiteralDataclassVisualizeExecutor(BaseDataclassVisualizeExecutor):
 
 class MultiDataclassVisualizeExecutor(BaseDataclassVisualizeExecutor):
     def __init__(
-            self,
-            dataclass: Any,
-            selected_style: str | Style = None,
-            panel: PanelStyle = None,
+        self,
+        dataclass: Any,
+        selected_style: str | Style = None,
+        panel: PanelStyle = None,
     ):
         columns = tuple(
             str(key.name)
@@ -167,8 +169,8 @@ class MultiDataclassVisualizeExecutor(BaseDataclassVisualizeExecutor):
 
 class StaticTableVisualizeExecutor(BaseVisualizeExecutor[StaticField]):
     def __init__(
-            self,
-            table: Table,
+        self,
+        table: Table,
     ):
         columns, rows = get_table_data(table)
         fields = tuple(StaticField(row) for row in rows)
@@ -176,7 +178,7 @@ class StaticTableVisualizeExecutor(BaseVisualizeExecutor[StaticField]):
         super().__init__(fields=fields, columns=columns)
 
     def __rich_console__(
-            self, console: Console, options: ConsoleOptions
+        self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         table = Table(**self.table_style)
         for column in self.columns:

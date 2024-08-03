@@ -42,10 +42,8 @@ class BaseForm(AbstractForm):
         return res
 
     def __rich_console__(self, console: Console, options: ConsoleOptions):
-        from os import devnull
-        file = open(devnull, "w")
-        res = self._render()
-        return ''
+        self._render()
+        return ""
 
 
 class Form(BaseForm):
