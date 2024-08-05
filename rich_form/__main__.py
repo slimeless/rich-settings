@@ -1,54 +1,39 @@
 from dataclasses import dataclass
-from typing import Literal
 
 from rich.console import Console
-from .render import Form
+from rich.panel import Panel
+
 from .field import LiteralField, BoolField
-from rich.table import Table
-
-cons = Console()
-
-
-def generate_table(rows, columns):
-    table = Table(show_header=True, header_style="bold magenta")
-
-    for i in range(columns):
-        table.add_column(f"Column {i + 1}", width=12)
-
-    for i in range(rows):
-        row_data = [f"Row {i + 1}, Col {j + 1}" for j in range(columns)]
-        table.add_row(*row_data)
-
-    return table
+from .render import Form
 
 
 @dataclass
-class Player:
-    is_fullscreen: bool = True
-    is_maximized: bool = False
-    is_animated: bool = False
-    exc: str = ""
-
-
-@dataclass
-class User:
-    name: Literal["Kirill", "Alex", "Alexey", "Vlad"] = "Kirill"
-    age: Literal[21, 22] = 22
-
-
-@dataclass
-class User1:
-    name: str = LiteralField(
-        values=(0, 1, 2, 3, 4), field_name="name", description="Name"
+class Example:
+    flag: bool = BoolField(
+        aliases=("ON", "OFF"),
+        desc_symbol="*",
+        description="Bool flag with values (True/False)",
+        field_name="example flag",
     )
-    age: bool = BoolField(
-        field_name="age", current=False, aliases=("enable", "disable")
+    list: str = LiteralField(
+        values=("A", "B", "C"),
+        desc_symbol="*",
+        description="List of values",
+        field_name="example list",
     )
 
 
 if __name__ == "__main__":
-    table = generate_table(5, 5)
-    a = User1()
-    form = Form(a)
+    example = Example()
+    example_repr = repr(example)
+    form = Form(example)
+    cons = Console()
+
     cons.print(form)
-    print(a)
+    panel = Panel.fit(
+        f"[bold green]{example_repr} --> {repr(example)}",
+        border_style="green",
+        title="Changes",
+    )
+
+    cons.print(panel)
