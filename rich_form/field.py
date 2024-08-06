@@ -7,6 +7,7 @@ from .base.exc import FieldValueException
 
 
 class FieldBase[FieldType](AbstractField):
+
     value_type = FieldType
     current_value = None
     current_alias = None
@@ -70,6 +71,7 @@ class BaseDataclassField(FieldBase, DataclassActionMixin):
         current=None,
         description: str = None,
     ):
+
         self.description = (
             f"[gray42]{desc_symbol} {description}" if description else None
         )
@@ -91,6 +93,15 @@ class BoolField(BaseDataclassField):
         desc_symbol: str = "--",
         description: str = None,
     ):
+        """
+        A boolean field.
+
+        :param field_name: The name of the field.
+        :param current: The current value of the field. Defaults to None.
+        :param aliases: The aliases for the possible values. Defaults to ("ON", "OFF").
+        :param desc_symbol: The symbol used to describe the field. Defaults to "--".
+        :param description: The description of the field. Defaults to None.
+        """
         values = (True, False)
         super().__init__(
             current=current,
@@ -114,6 +125,19 @@ class LiteralField(BaseDataclassField):
         description: str = None,
         desc_symbol: str = "--",
     ):
+        """
+        A literal field.
+
+        :param values: The possible values of the field.
+        :param field_name: The name of the field.
+        :param alias: The aliases for the possible values. Defaults to None.
+        :param current: The current value of the field. Defaults to None.
+        :param description: The description of the field. Defaults to None.
+        :param desc_symbol: The symbol used to describe the field. Defaults to "--".
+        """
+        if not alias:
+            alias = tuple([str(x) for x in values])
+
         super().__init__(
             current=current,
             values=values,

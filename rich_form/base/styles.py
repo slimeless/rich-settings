@@ -9,6 +9,7 @@ from rich.text import TextType
 
 @dataclass
 class PanelStyle:
+    """Style for the panel"""
     title: Optional[TextType] = None
     title_align: AlignMethod = "center"
     subtitle: Optional[TextType] = None

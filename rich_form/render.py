@@ -47,33 +47,38 @@ class BaseForm(AbstractForm):
 
 class Form(BaseForm):
     def __init__(
-        self,
-        dataclass: ...,
-        panel: PanelStyle = None,
-        selected_style: Style | str = None,
+            self,
+            dataclass: ...,
+            panel_style: PanelStyle = None,
+            selected_style: Style | str = None,
     ):
         from .visualize import MultiDataclassVisualizeExecutor
 
         super().__init__(
             renderable=MultiDataclassVisualizeExecutor(
-                dataclass=dataclass, selected_style=selected_style, panel=panel
+                dataclass=dataclass, selected_style=selected_style, panel=panel_style
             )
         )
 
     @classmethod
     def from_raw_boolean_dataclass(
-        cls,
-        dataclass: ...,
-        panel: PanelStyle = None,
-        selected_style: Style | str = None,
+            cls,
+            dataclass: ...,
+            panel_style: PanelStyle = None,
+            selected_style: Style | str = None,
     ):
+        """
+        :param dataclass: dataclass instance with boolean fields
+        :param panel_style: style for panel
+        :param selected_style: style for selected field
+        """
         from .visualize import BoolDataclassVisualizeExecutor
 
         instance = cls.__new__(cls)
 
         super(Form, instance).__init__(
             renderable=BoolDataclassVisualizeExecutor(
-                dataclass=dataclass, selected_style=selected_style, panel=panel
+                dataclass=dataclass, selected_style=selected_style, panel=panel_style
             )
         )
 
@@ -81,17 +86,23 @@ class Form(BaseForm):
 
     @classmethod
     def from_raw_literal_dataclass(
-        cls,
-        dataclass: ...,
-        panel: PanelStyle = None,
-        selected_style: Style | str = None,
+            cls,
+            dataclass: ...,
+            panel_style: PanelStyle = None,
+            selected_style: Style | str = None,
     ):
+        """
+        :param dataclass: dataclass instance with boolean fields
+        :param panel_style: style for panel
+        :param selected_style: style for selected field
+        """
+
         from .visualize import LiteralDataclassVisualizeExecutor
 
         instance = cls.__new__(cls)
         super(Form, instance).__init__(
             renderable=LiteralDataclassVisualizeExecutor(
-                dataclass=dataclass, selected_style=selected_style, panel=panel
+                dataclass=dataclass, selected_style=selected_style, panel=panel_style
             )
         )
 
@@ -99,6 +110,9 @@ class Form(BaseForm):
 
     @classmethod
     def from_rich_table(cls, table: Table):
+        """
+        :param table: rich table
+        """
         from .visualize import StaticTableVisualizeExecutor
 
         instance = cls.__new__(cls)
