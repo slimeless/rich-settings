@@ -7,7 +7,6 @@ from .base.exc import FieldValueException
 
 
 class FieldBase[FieldType](AbstractField):
-
     value_type = FieldType
     current_value = None
     current_alias = None
@@ -71,7 +70,6 @@ class BaseDataclassField(FieldBase, DataclassActionMixin):
         current=None,
         description: str = None,
     ):
-
         self.description = (
             f"[gray42]{desc_symbol} {description}" if description else None
         )
